@@ -16,6 +16,38 @@ import UIKit
 //: e. Use a `String?` for the Terminal, since it may not be set yet (i.e.: waiting to arrive on time)
 //:
 //: f. Use a class to represent a `DepartureBoard` with a list of departure flights, and the current airport
+enum FlightStatus: String {
+    case enRoute = "enRoute"
+    case Scheduled = "Scheduled"
+    case Canceled = "Canceld"
+    case Delayed = "Delayed"
+    
+}
+
+struct Airport {
+    var destination: String
+    
+}
+
+struct Flight {
+    var departureTime: Date?
+    var terminal: String?
+    var airline: String
+    var status: FlightStatus
+}
+
+class DepartureBoard {
+    var departureFlights: [Flight]
+    var currentAirport: Airport
+
+    
+    init(departureFlights: [Flight], currentAirport: Airport) {
+        self.departureFlights = departureFlights
+        self.currentAirport = currentAirport
+      
+    }
+}
+
 
 
 
@@ -29,6 +61,21 @@ import UIKit
 //: d. Make one of the flights have a `nil` terminal because it has not been decided yet.
 //:
 //: e. Stretch: Look at the API for [`DateComponents`](https://developer.apple.com/documentation/foundation/datecomponents?language=objc) for creating a specific time
+let date = Date()
+
+let LAX = Airport(destination: "JFK")
+
+let laxDepartureBoard = DepartureBoard(departureFlights: [], currentAirport: LAX)
+
+let flight1 = Flight(departureTime: nil, terminal: "4", airline: "americanAirlines", status: .Canceled)
+
+let flight2 = Flight(departureTime: date, terminal: "2", airline: "DeltaAirlines", status: .Scheduled)
+
+let flight3 = Flight(departureTime: date, terminal: nil, airline: "unitedAirlines", status: .Delayed)
+
+laxDepartureBoard.departureFlights.append(flight1)
+laxDepartureBoard.departureFlights.append(flight2)
+laxDepartureBoard.departureFlights.append(flight3)
 
 
 
@@ -41,7 +88,13 @@ import UIKit
 //:
 //: d. Print out the current DepartureBoard you created using the function
 
+func printDepartures(departureBoard: DepartureBoard) {
+    for flight in departureBoard.departureFlights {
+        print("\(flight)")
+    }
+}
 
+printDepartures(departureBoard: laxDepartureBoard)
 
 
 //: ## 4. Make a second function to print print an empty string if the `departureTime` is nil
@@ -59,7 +112,31 @@ import UIKit
 //:     Destination: Rochester Airline: Jet Blue Airways Flight: B6 586 Departure Time: 1:26 PM Terminal:  Status: Scheduled
 //:     Destination: Boston Airline: KLM Flight: KL 6966 Departure Time: 1:26 PM Terminal: 4 Status: Scheduled
 
+func printDepartures2(departureBoard: DepartureBoard) {
+    var flightInformation = ""
+    
+    for flight in departureBoard.departureFlights {
+        flightInformation = flightInformation + "Destination: \(departureBoard.currentAirport.destination) Airlines: \(flight.airline) "
+        if let unwrappedDepartureTime = flight.departureTime {
+            flightInformation = flightInformation + "Departure Time: \(unwrappedDepartureTime) "
+        } else {
+            flightInformation = flightInformation + "Departure Time: "
+        }
+        
+        if let unwrappedTerminal = flight.terminal {
+            flightInformation = flightInformation + "Terminal: \(unwrappedTerminal) "
+        } else {
+            flightInformation = flightInformation + "Terminal: "
+        }
+        flightInformation = flightInformation + "Status: \(flight.status) "
+        print(flightInformation)
+        flightInformation = ""
+    }
+    
+    
+}
 
+printDepartures2(departureBoard: laxDepartureBoard)
 
 //: ## 5. Add an instance method to your `DepatureBoard` class (above) that can send an alert message to all passengers about their upcoming flight. Loop through the flights and use a `switch` on the flight status variable.
 //: a. If the flight is canceled print out: "We're sorry your flight to \(city) was canceled, here is a $500 voucher"
